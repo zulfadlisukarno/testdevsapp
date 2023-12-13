@@ -22,15 +22,19 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)'
+
+- task: VSTest@2
+  inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
@@ -40,4 +44,4 @@ steps:
     azureSubscription: 'Azure subscription 1(ef96b35c-0637-4155-bf75-8572559a5d47)'
     appType: 'webApp'
     WebAppName: 'TestDevsApp'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    packageForLinux: '$(build.artifactStagingDirectory)\WebApp.zip'
